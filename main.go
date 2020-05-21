@@ -10,11 +10,8 @@ import (
 	"time"
 
 	"github.com/Sar-Kerson/img_task_server/logger"
-
 	"github.com/Sar-Kerson/img_task_server/handler"
-
 	"github.com/Sar-Kerson/img_task_server/dal"
-
 	"github.com/gin-gonic/gin"
 )
 
