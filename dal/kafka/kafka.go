@@ -10,7 +10,7 @@ var (
 	KafkaCli sarama.SyncProducer
 )
 
-func Init() {
+func init() {
 	KafkaCli = newProducer([]string{"35.240.232.168:9092"})
 }
 
