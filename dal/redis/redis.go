@@ -8,7 +8,7 @@ var (
 
 func init() {
 	Client = redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6380",
+		Addr:     "127.0.0.1:6382",
 		Password: "",
 		DB:       0,
 	})
