@@ -39,6 +39,7 @@ func getRouter() *gin.Engine {
 	router.POST("/upload", handler.UploadHandler)
 	router.GET("/task", handler.GetTaskMetaHandler)
 	router.GET("/my/tasks", handler.GetUserTaskList)
+	router.GET("/test/commit", handler.TestCommitHandler)
 	return router
 }
 

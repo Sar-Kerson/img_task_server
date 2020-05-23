@@ -19,3 +19,12 @@ func GetTaskMetaHandler(c *gin.Context) {
 	}
 	RespData(c, meta)
 }
+
+func TestCommitHandler(c *gin.Context)  {
+	err := model.CommitTask("5b5f663b7a3a8f9e4f32dc62e8de848f")
+	if err != nil {
+		log.Printf("[TestCommitHandler] CommitTask failed, err: %s", err.Error())
+		RespErr(c, err)
+	}
+	RespData(c, nil)
+}
