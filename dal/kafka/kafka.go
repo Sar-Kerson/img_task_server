@@ -11,7 +11,7 @@ var (
 )
 
 func init() {
-	KafkaCli = newProducer([]string{"35.240.232.168:9092"})
+	KafkaCli = newProducer([]string{"127.0.0.1:9092"})
 }
 
 func Close() {
