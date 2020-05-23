@@ -47,7 +47,7 @@ func UploadHandler(c *gin.Context) {
 
 	// 先看下有没有元信息存在，有的话则不处理
 	meta, err := model.GetTaskMeta(taskID)
-	if err == nil && meta.ProcStatus != model.TASK_STATUS_FAILED {
+	if err == nil && meta.ProcStatus == model.TASK_STATUS_SUC {
 		RespData(c, url)
 		log.Printf("[UploadHandler] task already exist, taskID: %s", taskID)
 		return
