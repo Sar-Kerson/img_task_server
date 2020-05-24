@@ -1,18 +1,29 @@
 package redis
 
-import "github.com/go-redis/redis/v7"
+import (
+	"github.com/go-redis/redis/v8"
+)
+
 
 var (
-	Client *redis.Client
+	Client *redis.ClusterClient
 )
 
 func init() {
-	Client = redis.NewClient(&redis.Options{
-		Addr:     "127.0.0.1:6382",
-		Password: "",
-		DB:       0,
+	Client = redis.NewClusterClient(&redis.ClusterOptions{
+		Addrs: []string{
+			"127.0.0.1:6380",
+			"127.0.0.1:6381",
+			"127.0.0.1:6382",
+			"127.0.0.1:6383",
+			"127.0.0.1:6384",
+			"127.0.0.1:6385",
+			"127.0.0.1:6386",
+		},
 	})
 }
+
+
 
 func Close() {
 	_ = Client.Close()

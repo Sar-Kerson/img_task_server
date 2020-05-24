@@ -1,13 +1,14 @@
 package model
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
 
 	redis_util "github.com/Sar-Kerson/img_task_server/dal/redis"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
 type UserInfo struct {
@@ -15,9 +16,9 @@ type UserInfo struct {
 	Password string `json:"password"`
 }
 
-func ValidatePassword(uid, pwd string) error {
+func ValidatePassword(ctx context.Context,uid, pwd string) error {
 	key := fmtUserInfoKey(uid)
-	valStr, err := redis_util.Client.Get(key).Result()
+	valStr, err := redis_util.Client.Get(ctx, key).Result()
 	if err != nil {
 		log.Printf("[ValidatePassword] Get(key) failed, key: %s, err: %s", key, err.Error())
 		return err
@@ -34,9 +35,9 @@ func ValidatePassword(uid, pwd string) error {
 	return nil
 }
 
-func CheckUserExist(uid string) (bool, error) {
+func CheckUserExist(ctx context.Context, uid string) (bool, error) {
 	key := fmtUserInfoKey(uid)
-	err := redis_util.Client.Get(key).Err()
+	err := redis_util.Client.Get(ctx,key).Err()
 	if err == redis.Nil {
 		return false, nil
 	}
@@ -46,7 +47,7 @@ func CheckUserExist(uid string) (bool, error) {
 	return true, nil
 }
 
-func SetUserInfo(uid, pwd string) error {
+func SetUserInfo(ctx context.Context, uid, pwd string) error {
 	userInfo := UserInfo{uid, pwd}
 	key := fmtUserInfoKey(uid)
 	val, err := json.Marshal(userInfo)
@@ -54,7 +55,7 @@ func SetUserInfo(uid, pwd string) error {
 		log.Printf("[SetTaskMeta] Marshal failed, key: %s, err: %s", key, err.Error())
 		return err
 	}
-	return redis_util.Client.Set(key, val, 0).Err()
+	return redis_util.Client.Set(ctx, key, val, 0).Err()
 }
 
 func fmtUserInfoKey(uid string) string {

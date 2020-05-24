@@ -1,19 +1,20 @@
 package model
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"time"
 
 	redis_util "github.com/Sar-Kerson/img_task_server/dal/redis"
-	"github.com/go-redis/redis/v7"
+	"github.com/go-redis/redis/v8"
 )
 
-func InsertToUserTaskList(uid, taskId string) error {
+func InsertToUserTaskList(ctx context.Context, uid, taskId string) error {
 	log.Printf("[InsertToUserTaskList] get req, uid: %s, taskId: %s", uid, taskId)
 	key := fmtUserTaskListKey(uid)
-	if err := redis_util.Client.ZAdd(key, &redis.Z{
+	if err := redis_util.Client.ZAdd(ctx, key, &redis.Z{
 		Score:  float64(time.Now().Unix()),
 		Member: taskId,
 	}).Err(); err != nil {
@@ -23,10 +24,10 @@ func InsertToUserTaskList(uid, taskId string) error {
 	return nil
 }
 
-func GetUserTaskIDList(uid string) ([]string, error) {
+func GetUserTaskIDList(ctx context.Context, uid string) ([]string, error) {
 	log.Printf("[GetUserTaskIDList] get req, uid: %s", uid)
 	key := fmtUserTaskListKey(uid)
-	vals, err := redis_util.Client.ZRevRange(key, 0, -1).Result()
+	vals, err := redis_util.Client.ZRevRange(ctx, key, 0, -1).Result()
 	if err != nil {
 		log.Printf("[GetUserTaskIDList] ZRevRange failed, key: %s, err: %s", key, err.Error())
 		return []string{}, err
@@ -34,7 +35,7 @@ func GetUserTaskIDList(uid string) ([]string, error) {
 	return vals, err
 }
 
-func MGetUserTaskList(tids []string) ([]TaskMeta, error) {
+func MGetUserTaskList(ctx context.Context, tids []string) ([]TaskMeta, error) {
 	if len(tids) ==  0 {
 		return []TaskMeta{}, nil
 	}
@@ -46,7 +47,7 @@ func MGetUserTaskList(tids []string) ([]TaskMeta, error) {
 		keys = append(keys, fmtTaskMetaKey(tid))
 	}
 
-	valStrs, err := redis_util.Client.MGet(keys...).Result()
+	valStrs, err := redis_util.Client.MGet(ctx, keys...).Result()
 	if err != nil {
 		log.Printf("[MGetUserTaskList] MGet failed, keys: %v, err: %s", keys, err.Error())
 		return []TaskMeta{}, err

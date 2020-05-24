@@ -12,7 +12,7 @@ func GetTaskMetaHandler(c *gin.Context) {
 	if tid == "" {
 		RespData(c, nil)
 	}
-	meta, err := model.GetTaskMeta(tid)
+	meta, err := model.GetTaskMeta(c,tid)
 	if err != nil {
 		log.Printf("[GetTaskMetaHandler] GetTaskMeta failed, err: %s", err.Error())
 		RespErr(c, err)

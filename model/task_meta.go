@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -39,7 +40,7 @@ func NewTaskMeta(tid, uid, inUrl string) *TaskMeta {
 	}
 }
 
-func SetTaskMeta(taskMeta *TaskMeta) error {
+func SetTaskMeta(ctx context.Context, taskMeta *TaskMeta) error {
 	if taskMeta == nil {
 		return ERR_INVALID_PARAMS
 	}
@@ -49,12 +50,12 @@ func SetTaskMeta(taskMeta *TaskMeta) error {
 		log.Printf("[SetTaskMeta] Marshal failed, key: %s, err: %s", key, err.Error())
 		return err
 	}
-	return redis.Client.Set(key, val, 0).Err()
+	return redis.Client.Set(ctx, key, val, 0).Err()
 }
 
-func GetTaskMeta(taskId string) (*TaskMeta, error) {
+func GetTaskMeta(ctx context.Context, taskId string) (*TaskMeta, error) {
 	key := fmtTaskMetaKey(taskId)
-	valStr, err := redis.Client.Get(key).Result()
+	valStr, err := redis.Client.Get(ctx, key).Result()
 	if err != nil {
 		log.Printf("[GetTaskMeta] Get(key) failed, key: %s, err: %s", key, err.Error())
 		return nil, err

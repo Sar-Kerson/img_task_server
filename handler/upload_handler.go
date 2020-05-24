@@ -2,6 +2,7 @@ package handler
 
 import (
 	"bytes"
+	"context"
 	"image"
 	"image/jpeg"
 	_ "image/png"
@@ -46,7 +47,7 @@ func UploadHandler(c *gin.Context) {
 	}
 
 	// 先看下有没有元信息存在，有的话则不处理
-	meta, err := model.GetTaskMeta(taskID)
+	meta, err := model.GetTaskMeta(c,taskID)
 	if err == nil && meta.ProcStatus == model.TASK_STATUS_SUC {
 		RespData(c, url)
 		log.Printf("[UploadHandler] task already exist, taskID: %s", taskID)
@@ -54,7 +55,7 @@ func UploadHandler(c *gin.Context) {
 	}
 
 	// 更新任务元信息
-	err = updateTaskMeta(uid, taskID, url)
+	err = updateTaskMeta(c,uid, taskID, url)
 	if err != nil {
 		RespErr(c, err)
 		log.Printf("[UploadHandler] updateTaskMeta, err: %v", err)
@@ -100,19 +101,19 @@ func preprocessImage(header *multipart.FileHeader) ([]byte, error) {
 	return newBuf.Bytes(), nil
 }
 
-func updateTaskMeta(uid, taskID, url string) error {
+func updateTaskMeta(c context.Context,uid, taskID, url string) error {
 	// 生成元信息
 	meta := model.NewTaskMeta(taskID, uid, url)
 
 	// 插入用户历史提交
-	err := model.InsertToUserTaskList(uid, taskID)
+	err := model.InsertToUserTaskList(c,uid, taskID)
 	if err != nil {
 		log.Printf("[updateTaskMeta] InsertToUserTaskList failed, err: %v", err)
 		return err
 	}
 
 	// 插入任务元信息
-	err = model.SetTaskMeta(meta)
+	err = model.SetTaskMeta(c,meta)
 	if err != nil {
 		log.Printf("[updateTaskMeta] SetTaskMeta failed, err: %v", err)
 		return err

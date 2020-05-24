@@ -14,7 +14,7 @@ func LoginHandler(c *gin.Context) {
 		RespData(c, false)
 		return
 	}
-	err := model.ValidatePassword(uid, passwd)
+	err := model.ValidatePassword(c,uid, passwd)
 	if err != nil {
 		RespData(c, false)
 		log.Printf("[UploadHandler] ValidatePassword, err: %v", err)
@@ -30,13 +30,13 @@ func SignupHandler(c *gin.Context) {
 		RespData(c, false)
 		return
 	}
-	exist, _ := model.CheckUserExist(uid)
+	exist, _ := model.CheckUserExist(c,uid)
 	if exist {
 		RespData(c, false)
 		log.Printf("[SignupHandler] user exist")
 		return
 	}
-	err := model.SetUserInfo(uid, passwd)
+	err := model.SetUserInfo(c,uid, passwd)
 	if err != nil {
 		RespErr(c, err)
 		log.Printf("[SignupHandler] SetUserInfo, err: %v", err)
@@ -52,14 +52,14 @@ func GetUserTaskList(c *gin.Context) {
 		return
 	}
 
-	tids, err := model.GetUserTaskIDList(uid)
+	tids, err := model.GetUserTaskIDList(c, uid)
 	if err != nil {
 		RespErr(c, err)
 		log.Printf("[GetUserTaskList] GetUserTaskIDList, err: %v", err)
 		return
 	}
 
-	taskList, err := model.MGetUserTaskList(tids)
+	taskList, err := model.MGetUserTaskList(c,tids)
 	if err != nil {
 		RespErr(c, err)
 		log.Printf("[GetUserTaskList] MGetUserTaskList, err: %v", err)
