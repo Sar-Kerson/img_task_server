@@ -36,12 +36,11 @@ func shutdown() {
 
 func getRouter() *gin.Engine {
 	router := gin.Default()
+	router.Use(CORSMiddleware())
 	router.POST("/upload", handler.UploadHandler)
 	router.GET("/task", handler.GetTaskMetaHandler)
 	router.GET("/my/tasks", handler.GetUserTaskList)
 	router.GET("/test/commit", handler.TestCommitHandler)
-
-	router.Use(CORSMiddleware())
 	return router
 }
 
