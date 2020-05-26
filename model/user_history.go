@@ -47,18 +47,28 @@ func MGetUserTaskList(ctx context.Context, tids []string) ([]TaskMeta, error) {
 		keys = append(keys, fmtTaskMetaKey(tid))
 	}
 
-	valStrs, err := redis_util.Client.MGet(ctx, keys...).Result()
+	cmds := make([]*redis.StringCmd, 0, len(keys))
+	pipe := redis_util.Client.Pipeline()
+	for _, key := range keys {
+		cmds = append(cmds, pipe.Get(ctx, key))
+	}
+	_, err := pipe.Exec(ctx)
+	//valStrs, err := redis_util.Client.MGet(ctx, keys...).Result()
 	if err != nil {
 		log.Printf("[MGetUserTaskList] MGet failed, keys: %v, err: %s", keys, err.Error())
 		return []TaskMeta{}, err
 	}
 
-	for _, valStr := range valStrs {
-		if valStr == nil {
+	for _, cmd := range cmds {
+		valStr, err := cmd.Result()
+		if err != nil {
+			continue
+		}
+		if valStr == "" {
 			continue
 		}
 		meta := TaskMeta{}
-		err := json.Unmarshal([]byte(valStr.(string)), &meta)
+		err = json.Unmarshal([]byte(valStr), &meta)
 		if err != nil {
 			log.Printf("[MGetUserTaskList] Unmarshal failed, valStr: %s, err: %s", valStr, err.Error())
 			continue
