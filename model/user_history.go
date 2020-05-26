@@ -54,6 +54,9 @@ func MGetUserTaskList(ctx context.Context, tids []string) ([]TaskMeta, error) {
 	}
 
 	for _, valStr := range valStrs {
+		if valStr == nil {
+			continue
+		}
 		meta := TaskMeta{}
 		err := json.Unmarshal([]byte(valStr.(string)), &meta)
 		if err != nil {
