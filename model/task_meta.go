@@ -12,6 +12,7 @@ import (
 )
 
 const (
+	TASK_STATUS_UNKNOWN = 0
 	TASK_STATUS_PROCESSING = 1
 	TASK_STATUS_SUC        = 2
 	TASK_STATUS_FAILED     = 10
@@ -19,6 +20,13 @@ const (
 
 var (
 	ERR_INVALID_PARAMS = errors.New("invalid params")
+
+	StatusMap = map[int]string{
+		TASK_STATUS_UNKNOWN: "unknown",
+		TASK_STATUS_PROCESSING: "processing",
+		TASK_STATUS_SUC: "successful",
+		TASK_STATUS_FAILED: "fail",
+	}
 )
 
 type TaskMeta struct {
@@ -28,6 +36,24 @@ type TaskMeta struct {
 	ProcStatus int64  `json:"proc_status"`
 	InputURL   string `json:"input_url"`
 	OutputURL  string `json:"output_url"`
+}
+
+type TaskApiData struct {
+	TaskID     string `json:"task_id"`
+	CreateTime int64  `json:"create_time"`
+	ProcStatus string `json:"proc_status"`
+	InputURL   string `json:"input_url"`
+	OutputURL  string `json:"output_url"`
+}
+
+func NewTaskApiDataFromTaskMeta(meta TaskMeta) *TaskApiData {
+	return &TaskApiData{
+		TaskID: meta.TaskID,
+		CreateTime: meta.CreateTime,
+		ProcStatus: StatusMap[int(meta.ProcStatus)],
+		InputURL: meta.InputURL,
+		OutputURL: meta.OutputURL,
+	}
 }
 
 func NewTaskMeta(tid, uid, inUrl string) *TaskMeta {

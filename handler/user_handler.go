@@ -60,11 +60,15 @@ func GetUserTaskList(c *gin.Context) {
 	}
 
 	taskList, err := model.MGetUserTaskList(c,tids)
+	res := make([]model.TaskApiData, 0, len(taskList))
+	for _, meta := range taskList {
+		res = append(res, *model.NewTaskApiDataFromTaskMeta(meta))
+	}
 	if err != nil {
 		RespErr(c, err)
 		log.Printf("[GetUserTaskList] MGetUserTaskList, err: %v", err)
 		return
 	}
 
-	RespData(c, taskList)
+	RespData(c, res)
 }
