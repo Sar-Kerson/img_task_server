@@ -54,7 +54,7 @@ func MGetUserTaskList(ctx context.Context, tids []string) ([]TaskMeta, error) {
 	}
 	_, err := pipe.Exec(ctx)
 	//valStrs, err := redis_util.Client.MGet(ctx, keys...).Result()
-	if err != nil {
+	if err != nil && err != redis.Nil {
 		log.Printf("[MGetUserTaskList] MGet failed, keys: %v, err: %s", keys, err.Error())
 		return []TaskMeta{}, err
 	}
