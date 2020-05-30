@@ -96,5 +96,5 @@ func GetTaskMeta(ctx context.Context, taskId string) (*TaskMeta, error) {
 }
 
 func fmtTaskMetaKey(taskId string) string {
-	return fmt.Sprintf("test:%s", taskId)
+	return fmt.Sprintf("release:%s", taskId)
 }
